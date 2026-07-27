@@ -3,28 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta
-    name="description"
-    content="A step-by-step calorie and macronutrient calculator."
-  />
+  <meta name="description" content="Step-by-step calorie and macro calculator." />
   <title>Calorie & Macro Calculator</title>
 
   <style>
     :root {
-      --bg-deep: #111827;
-      --bg-mid: #1f2937;
-      --card: rgba(255, 255, 255, 0.94);
-      --card-soft: rgba(255, 255, 255, 0.78);
-      --text: #182033;
-      --muted: #687086;
-      --line: #dfe4ee;
+      --bg-1: #0f172a;
+      --bg-2: #1e293b;
+      --card: rgba(255, 255, 255, 0.96);
+      --text: #172033;
+      --muted: #6b7280;
+      --line: #dfe4ec;
       --accent: #ff7a00;
-      --accent-dark: #dd6200;
-      --accent-soft: #fff0e1;
-      --success: #1f8b5b;
-      --danger: #b63838;
+      --accent-dark: #d85f00;
+      --accent-soft: #fff1e4;
+      --dark-card: #27324a;
+      --danger: #a52f2f;
       --danger-bg: #fff0f0;
-      --shadow: 0 30px 80px rgba(0, 0, 0, 0.28);
+      --shadow: 0 30px 80px rgba(0, 0, 0, 0.30);
       --radius-xl: 30px;
       --radius-lg: 20px;
       --radius-md: 14px;
@@ -36,21 +32,18 @@
 
     html {
       min-width: 320px;
-      background: var(--bg-deep);
+      background: var(--bg-1);
     }
 
     body {
       margin: 0;
       min-height: 100vh;
-      overflow-x: hidden;
       color: var(--text);
-      font-family:
-        Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-        "Segoe UI", sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
-        radial-gradient(circle at 10% 10%, rgba(255, 122, 0, 0.34), transparent 28rem),
-        radial-gradient(circle at 90% 15%, rgba(85, 124, 255, 0.25), transparent 25rem),
-        linear-gradient(135deg, var(--bg-deep), var(--bg-mid));
+        radial-gradient(circle at 10% 10%, rgba(255, 122, 0, 0.35), transparent 30rem),
+        radial-gradient(circle at 90% 15%, rgba(97, 132, 255, 0.26), transparent 27rem),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2));
     }
 
     body::before,
@@ -61,21 +54,21 @@
       width: 340px;
       height: 340px;
       border-radius: 50%;
-      filter: blur(12px);
-      opacity: 0.26;
+      filter: blur(14px);
+      opacity: 0.22;
       pointer-events: none;
     }
 
     body::before {
-      top: 62%;
       left: -170px;
+      bottom: -90px;
       background: #ff7a00;
     }
 
     body::after {
-      top: -170px;
       right: -110px;
-      background: #7694ff;
+      top: -170px;
+      background: #7997ff;
     }
 
     button,
@@ -88,7 +81,11 @@
       cursor: pointer;
     }
 
-    .app-shell {
+    [hidden] {
+      display: none !important;
+    }
+
+    .screen {
       position: relative;
       z-index: 1;
       display: grid;
@@ -97,15 +94,97 @@
       padding: 30px 18px;
     }
 
+    .access-card,
     .calculator {
       width: min(840px, 100%);
-      min-height: 650px;
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.24);
       border-radius: var(--radius-xl);
       background: var(--card);
       box-shadow: var(--shadow);
       backdrop-filter: blur(18px);
+    }
+
+    .access-card {
+      width: min(470px, 100%);
+      padding: 42px;
+      text-align: center;
+    }
+
+    .lock-mark {
+      display: grid;
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 20px;
+      place-items: center;
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--accent), #ffad61);
+      color: white;
+      font-size: 1.65rem;
+      font-weight: 900;
+      box-shadow: 0 14px 30px rgba(255, 122, 0, 0.28);
+    }
+
+    .access-card h1,
+    .access-card p {
+      margin-top: 0;
+    }
+
+    .access-card h1 {
+      margin-bottom: 10px;
+      font-size: 2rem;
+      letter-spacing: -0.05em;
+    }
+
+    .access-card p {
+      margin-bottom: 24px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .access-input {
+      width: 100%;
+      min-height: 58px;
+      border: 2px solid var(--line);
+      border-radius: 16px;
+      outline: none;
+      padding: 0 18px;
+      text-align: center;
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+
+    .access-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 5px rgba(255, 122, 0, 0.11);
+    }
+
+    .access-button {
+      width: 100%;
+      min-height: 54px;
+      margin-top: 14px;
+      border: 0;
+      border-radius: 14px;
+      background: var(--accent);
+      color: white;
+      font-weight: 850;
+      box-shadow: 0 12px 24px rgba(255, 122, 0, 0.24);
+    }
+
+    .access-error {
+      margin: 14px 0 0;
+      border-radius: 12px;
+      background: var(--danger-bg);
+      color: var(--danger);
+      padding: 10px 12px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .calculator {
+      min-height: 650px;
     }
 
     .topbar {
@@ -115,7 +194,7 @@
       gap: 18px;
       padding: 24px 30px 18px;
       border-bottom: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.86);
+      background: rgba(255, 255, 255, 0.88);
     }
 
     .brand {
@@ -131,18 +210,17 @@
       place-items: center;
       border-radius: 14px;
       background: linear-gradient(135deg, var(--accent), #ff9d42);
-      color: #fff;
+      color: white;
       font-size: 1.2rem;
       font-weight: 900;
-      box-shadow: 0 10px 22px rgba(255, 122, 0, 0.28);
     }
 
-    .brand-copy p,
-    .brand-copy h1 {
+    .brand p,
+    .brand h1 {
       margin: 0;
     }
 
-    .brand-copy p {
+    .brand p {
       margin-bottom: 2px;
       color: var(--accent-dark);
       font-size: 0.7rem;
@@ -151,7 +229,7 @@
       text-transform: uppercase;
     }
 
-    .brand-copy h1 {
+    .brand h1 {
       font-size: 1.05rem;
       letter-spacing: -0.03em;
     }
@@ -173,22 +251,22 @@
     }
 
     .progress-bar {
-      width: 0%;
+      width: 0;
       height: 100%;
       border-radius: 0 999px 999px 0;
-      background: linear-gradient(90deg, var(--accent), #ffab5c);
+      background: linear-gradient(90deg, var(--accent), #ffad61);
       transition: width 280ms ease;
     }
 
     .content {
-      min-height: 515px;
+      min-height: 520px;
       padding: 38px 34px 30px;
     }
 
     .step,
     .results-screen {
       display: none;
-      animation: enter 280ms ease;
+      animation: enter 250ms ease;
     }
 
     .step.active,
@@ -199,7 +277,7 @@
     @keyframes enter {
       from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(9px);
       }
       to {
         opacity: 1;
@@ -227,17 +305,14 @@
     .question-wrap h2,
     .results-screen h2 {
       margin: 0;
-      color: var(--text);
       font-size: clamp(2rem, 5vw, 3.2rem);
       line-height: 1.05;
       letter-spacing: -0.055em;
     }
 
     .question-help {
-      max-width: 540px;
       margin: 15px 0 28px;
       color: var(--muted);
-      font-size: 1rem;
       line-height: 1.65;
     }
 
@@ -250,46 +325,32 @@
     .choice-card {
       position: relative;
       display: grid;
-      min-height: 118px;
-      align-content: center;
+      min-height: 96px;
+      place-items: center;
       border: 1px solid var(--line);
       border-radius: var(--radius-lg);
-      background: #fff;
+      background: white;
       padding: 20px;
-      transition:
-        transform 160ms ease,
-        border-color 160ms ease,
-        background 160ms ease,
-        box-shadow 160ms ease;
+      font-size: 1.05rem;
+      font-weight: 850;
+      transition: transform 150ms ease, border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
     }
 
     .choice-card:hover {
-      border-color: rgba(255, 122, 0, 0.65);
+      border-color: var(--accent);
       transform: translateY(-2px);
-      box-shadow: 0 13px 28px rgba(40, 50, 75, 0.1);
     }
 
     .choice-card.selected {
       border-color: var(--accent);
       background: var(--accent-soft);
-      box-shadow: 0 0 0 4px rgba(255, 122, 0, 0.1);
+      box-shadow: 0 0 0 4px rgba(255, 122, 0, 0.10);
     }
 
     .choice-card input {
       position: absolute;
       opacity: 0;
       pointer-events: none;
-    }
-
-    .choice-title {
-      margin-bottom: 5px;
-      font-weight: 850;
-    }
-
-    .choice-description {
-      color: var(--muted);
-      font-size: 0.82rem;
-      line-height: 1.45;
     }
 
     .input-box {
@@ -299,10 +360,8 @@
       overflow: hidden;
       border: 2px solid var(--line);
       border-radius: 20px;
-      background: #fff;
-      transition:
-        border-color 160ms ease,
-        box-shadow 160ms ease;
+      background: white;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
     }
 
     .input-box:focus-within {
@@ -317,23 +376,22 @@
       border: 0;
       outline: 0;
       background: transparent;
-      color: var(--text);
       padding: 0 112px 0 24px;
-      font-size: 1.55rem;
+      font-size: 1.5rem;
       font-weight: 800;
     }
 
     .input-box select {
       appearance: none;
       padding-right: 52px;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
     }
 
     .input-unit {
       position: absolute;
       right: 22px;
       color: var(--muted);
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 750;
       pointer-events: none;
     }
@@ -369,10 +427,7 @@
       border-radius: 14px;
       padding: 0 22px;
       font-weight: 850;
-      transition:
-        transform 150ms ease,
-        background 150ms ease,
-        border-color 150ms ease;
+      transition: transform 150ms ease, background 150ms ease;
     }
 
     .btn:hover {
@@ -383,7 +438,7 @@
       margin-left: auto;
       border: 0;
       background: var(--accent);
-      color: #fff;
+      color: white;
       box-shadow: 0 12px 24px rgba(255, 122, 0, 0.24);
     }
 
@@ -393,23 +448,41 @@
 
     .btn-secondary {
       border: 1px solid var(--line);
-      background: #fff;
+      background: white;
       color: var(--text);
     }
 
     .results-screen {
-      max-width: 720px;
+      max-width: 740px;
       margin: 0 auto;
     }
 
     .results-heading {
-      margin-bottom: 26px;
+      margin-bottom: 22px;
       text-align: center;
     }
 
     .results-heading .question-help {
       margin-right: auto;
       margin-left: auto;
+      margin-bottom: 12px;
+    }
+
+    .recap-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 9px;
+      margin: 0 auto 18px;
+    }
+
+    .recap-chip {
+      border-radius: 999px;
+      background: #f2f4f8;
+      color: #4f586a;
+      padding: 8px 11px;
+      font-size: 0.76rem;
+      font-weight: 750;
     }
 
     .calorie-summary {
@@ -421,24 +494,20 @@
 
     .calorie-card {
       border-radius: var(--radius-lg);
-      background:
-        linear-gradient(145deg, rgba(255, 255, 255, 0.2), transparent),
-        var(--accent);
-      color: #fff;
+      background: linear-gradient(145deg, rgba(255,255,255,0.15), transparent), var(--accent);
+      color: white;
       padding: 24px;
-      box-shadow: 0 15px 30px rgba(255, 122, 0, 0.2);
+      box-shadow: 0 15px 30px rgba(255, 122, 0, 0.20);
     }
 
     .calorie-card.secondary {
-      background:
-        linear-gradient(145deg, rgba(255, 255, 255, 0.15), transparent),
-        #2a3550;
+      background: linear-gradient(145deg, rgba(255,255,255,0.10), transparent), var(--dark-card);
       box-shadow: 0 15px 30px rgba(27, 39, 66, 0.18);
     }
 
     .result-label {
       margin: 0 0 12px;
-      color: rgba(255, 255, 255, 0.8);
+      color: rgba(255,255,255,0.80);
       font-size: 0.76rem;
       font-weight: 800;
       letter-spacing: 0.08em;
@@ -453,7 +522,7 @@
     }
 
     .result-unit {
-      color: rgba(255, 255, 255, 0.76);
+      color: rgba(255,255,255,0.76);
       font-size: 0.8rem;
       font-weight: 700;
     }
@@ -465,10 +534,10 @@
     }
 
     .macro-card {
-      min-height: 126px;
+      min-height: 124px;
       border: 1px solid var(--line);
       border-radius: 18px;
-      background: #fff;
+      background: white;
       padding: 18px;
       text-align: center;
     }
@@ -476,7 +545,7 @@
     .macro-card p {
       margin: 0 0 12px;
       color: var(--muted);
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       font-weight: 800;
       text-transform: uppercase;
     }
@@ -484,25 +553,76 @@
     .macro-card strong {
       display: block;
       margin-bottom: 4px;
-      font-size: 1.7rem;
+      font-size: 1.65rem;
       letter-spacing: -0.05em;
     }
 
     .macro-card span {
       color: var(--muted);
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       font-weight: 700;
     }
 
-    .result-note {
-      margin: 16px 0 0;
-      border-radius: 14px;
-      background: #f6f8fb;
+    .workout-section {
+      margin-top: 18px;
+      border-radius: 22px;
+      background: #f7f8fb;
+      padding: 22px;
+    }
+
+    .workout-section h3 {
+      margin: 0 0 6px;
+      font-size: 1.18rem;
+      letter-spacing: -0.03em;
+    }
+
+    .workout-section > p {
+      margin: 0 0 16px;
       color: var(--muted);
-      padding: 14px;
-      font-size: 0.78rem;
-      line-height: 1.55;
-      text-align: center;
+      font-size: 0.8rem;
+    }
+
+    .workout-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .workout-card {
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: white;
+      padding: 18px;
+    }
+
+    .workout-card h4 {
+      margin: 0 0 14px;
+      color: var(--accent-dark);
+      font-size: 0.92rem;
+      text-transform: uppercase;
+    }
+
+    .workout-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 9px 0;
+      border-top: 1px solid #edf0f5;
+    }
+
+    .workout-row:first-of-type {
+      border-top: 0;
+    }
+
+    .workout-row span {
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .workout-row strong {
+      font-size: 0.92rem;
     }
 
     .results-actions {
@@ -512,20 +632,8 @@
       margin-top: 22px;
     }
 
-    .summary-line {
-      margin: 0 0 14px;
-      color: var(--muted);
-      font-size: 0.85rem;
-      font-weight: 650;
-      text-align: center;
-    }
-
-    [hidden] {
-      display: none !important;
-    }
-
     @media (max-width: 700px) {
-      .app-shell {
+      .screen {
         padding: 0;
       }
 
@@ -533,6 +641,10 @@
         min-height: 100vh;
         border: 0;
         border-radius: 0;
+      }
+
+      .access-card {
+        border-radius: 24px;
       }
 
       .topbar {
@@ -548,25 +660,27 @@
       }
 
       .option-grid,
-      .calorie-summary {
+      .calorie-summary,
+      .workout-grid {
         grid-template-columns: 1fr;
       }
 
       .macro-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
-
-      .step-count {
-        min-width: auto;
-      }
     }
 
     @media (max-width: 420px) {
-      .brand-copy h1 {
+      .access-card {
+        padding: 30px 20px;
+      }
+
+      .brand h1 {
         font-size: 0.93rem;
       }
 
       .step-count {
+        min-width: auto;
         padding: 7px 9px;
         font-size: 0.7rem;
       }
@@ -575,21 +689,38 @@
       .results-screen h2 {
         font-size: 2rem;
       }
-
-      .input-box input {
-        font-size: 1.35rem;
-      }
     }
   </style>
 </head>
 
 <body>
-  <main class="app-shell">
+  <section class="screen" id="access-screen">
+    <div class="access-card">
+      <div class="lock-mark">🔒</div>
+      <h1>Private access</h1>
+      <p>Enter the access code to open the calculator.</p>
+
+      <form id="access-form">
+        <input
+          class="access-input"
+          id="access-code-input"
+          type="password"
+          autocomplete="off"
+          placeholder="Access code"
+          required
+        />
+        <button class="access-button" type="submit">Open calculator</button>
+        <p class="access-error" id="access-error" hidden>Incorrect access code.</p>
+      </form>
+    </div>
+  </section>
+
+  <main class="screen" id="calculator-screen" hidden>
     <section class="calculator">
       <header class="topbar">
         <div class="brand">
           <div class="brand-mark">C</div>
-          <div class="brand-copy">
+          <div>
             <p>Nutrition tool</p>
             <h1>Calorie & Macro Calculator</h1>
           </div>
@@ -598,7 +729,7 @@
         <div class="step-count" id="step-count">1 / 7</div>
       </header>
 
-      <div class="progress-track" aria-hidden="true">
+      <div class="progress-track">
         <div class="progress-bar" id="progress-bar"></div>
       </div>
 
@@ -608,21 +739,17 @@
             <div class="question-wrap">
               <p class="step-kicker">Step 1</p>
               <h2>What is your sex?</h2>
-              <p class="question-help">
-                This changes the BMR equation used by the calculator.
-              </p>
+              <p class="question-help">Choose one option.</p>
 
               <div class="option-grid" data-choice-group="sex">
                 <label class="choice-card selected">
                   <input type="radio" name="sex" value="male" checked />
-                  <span class="choice-title">Male</span>
-                  <span class="choice-description">Uses the male BMR and macro equations.</span>
+                  Male
                 </label>
 
                 <label class="choice-card">
                   <input type="radio" name="sex" value="female" />
-                  <span class="choice-title">Female</span>
-                  <span class="choice-description">Uses the female BMR and macro equations.</span>
+                  Female
                 </label>
               </div>
 
@@ -636,19 +763,10 @@
             <div class="question-wrap">
               <p class="step-kicker">Step 2</p>
               <h2>What is your weight?</h2>
-              <p class="question-help">Enter your current body weight in kilograms.</p>
+              <p class="question-help">Enter your current body weight.</p>
 
               <label class="input-box">
-                <input
-                  id="weight"
-                  type="number"
-                  min="30"
-                  max="300"
-                  step="0.1"
-                  value="75"
-                  inputmode="decimal"
-                  required
-                />
+                <input id="weight" type="number" min="30" max="300" step="0.1" value="75" inputmode="decimal" required />
                 <span class="input-unit">kg</span>
               </label>
 
@@ -665,19 +783,10 @@
             <div class="question-wrap">
               <p class="step-kicker">Step 3</p>
               <h2>What is your height?</h2>
-              <p class="question-help">Enter your height in centimeters.</p>
+              <p class="question-help">Enter your height.</p>
 
               <label class="input-box">
-                <input
-                  id="height"
-                  type="number"
-                  min="100"
-                  max="250"
-                  step="0.1"
-                  value="174"
-                  inputmode="decimal"
-                  required
-                />
+                <input id="height" type="number" min="100" max="250" step="0.1" value="174" inputmode="decimal" required />
                 <span class="input-unit">cm</span>
               </label>
 
@@ -694,19 +803,10 @@
             <div class="question-wrap">
               <p class="step-kicker">Step 4</p>
               <h2>How old are you?</h2>
-              <p class="question-help">Enter your age in years.</p>
+              <p class="question-help">Enter your age.</p>
 
               <label class="input-box">
-                <input
-                  id="age"
-                  type="number"
-                  min="14"
-                  max="100"
-                  step="1"
-                  value="25"
-                  inputmode="numeric"
-                  required
-                />
+                <input id="age" type="number" min="14" max="100" step="1" value="25" inputmode="numeric" required />
                 <span class="input-unit">years</span>
               </label>
 
@@ -723,9 +823,7 @@
             <div class="question-wrap">
               <p class="step-kicker">Step 5</p>
               <h2>Choose your activity factor</h2>
-              <p class="question-help">
-                Pick the value that best represents your normal weekly activity.
-              </p>
+              <p class="question-help">Select the closest value.</p>
 
               <label class="input-box">
                 <select id="activity" required>
@@ -740,9 +838,9 @@
               </label>
 
               <ul class="activity-list">
-                <li>1.20: little structured activity</li>
-                <li>1.375–1.55: light to moderate weekly training</li>
-                <li>1.70–1.90: frequent or demanding training</li>
+                <li>1.20: sedentary</li>
+                <li>1.375–1.55: light to moderate activity</li>
+                <li>1.70–1.90: high activity</li>
               </ul>
 
               <div class="navigation">
@@ -756,22 +854,10 @@
             <div class="question-wrap">
               <p class="step-kicker">Step 6</p>
               <h2>What is your body-fat percentage?</h2>
-              <p class="question-help">
-                Enter your latest estimate. This is used for lean body mass and
-                macro calculations.
-              </p>
+              <p class="question-help">Enter your latest estimate.</p>
 
               <label class="input-box">
-                <input
-                  id="body-fat"
-                  type="number"
-                  min="3"
-                  max="60"
-                  step="0.1"
-                  value="16.5"
-                  inputmode="decimal"
-                  required
-                />
+                <input id="body-fat" type="number" min="3" max="60" step="0.1" value="16.5" inputmode="decimal" required />
                 <span class="input-unit">%</span>
               </label>
 
@@ -788,35 +874,28 @@
             <div class="question-wrap">
               <p class="step-kicker">Step 7</p>
               <h2>What is your goal?</h2>
-              <p class="question-help">
-                The selected multiplier is applied to your calculated maintenance.
-              </p>
+              <p class="question-help">Choose one option.</p>
 
               <div class="option-grid" data-choice-group="goal">
                 <label class="choice-card selected">
                   <input type="radio" name="goal" value="cut" checked />
-                  <span class="choice-title">Cut</span>
-                  <span class="choice-description">80% of maintenance calories.</span>
+                  Cut
                 </label>
 
                 <label class="choice-card">
                   <input type="radio" name="goal" value="maintain" />
-                  <span class="choice-title">Maintain</span>
-                  <span class="choice-description">100% of maintenance calories.</span>
+                  Maintain
                 </label>
 
                 <label class="choice-card">
                   <input type="radio" name="goal" value="bulk" />
-                  <span class="choice-title">Bulk</span>
-                  <span class="choice-description">125% of maintenance calories.</span>
+                  Bulk
                 </label>
               </div>
 
               <div class="navigation">
                 <button class="btn btn-secondary back-button" type="button">Back</button>
-                <button class="btn btn-primary" id="calculate-button" type="submit">
-                  Show my results
-                </button>
+                <button class="btn btn-primary" type="submit">Show my results</button>
               </div>
             </div>
           </section>
@@ -826,10 +905,15 @@
           <div class="results-heading">
             <p class="step-kicker">Calculation complete</p>
             <h2>Your daily targets</h2>
-            <p class="question-help">
-              These values use the exact equations you provided.
-            </p>
-            <p class="summary-line" id="summary-line"></p>
+            <p class="question-help">Calculated using your equations.</p>
+
+            <div class="recap-bar">
+              <span class="recap-chip" id="recap-sex">—</span>
+              <span class="recap-chip" id="recap-weight">—</span>
+              <span class="recap-chip" id="recap-body-fat">—</span>
+              <span class="recap-chip" id="recap-activity">—</span>
+              <span class="recap-chip" id="recap-bmr">—</span>
+            </div>
           </div>
 
           <div class="calorie-summary">
@@ -872,18 +956,54 @@
             </article>
           </div>
 
-          <p class="result-note">
-            Estimated BMR: <strong id="bmr-output">—</strong> kcal/day.
-            This calculator is an estimate and is not medical advice.
-          </p>
+          <section class="workout-section">
+            <h3>Pre-workout & Post-workout</h3>
+            <p>The workout totals are divided equally between the two meals.</p>
+
+            <div class="workout-grid">
+              <article class="workout-card">
+                <h4>Pre-workout</h4>
+
+                <div class="workout-row">
+                  <span>Protein</span>
+                  <strong id="pre-protein">—</strong>
+                </div>
+
+                <div class="workout-row">
+                  <span>Carbs</span>
+                  <strong id="pre-carbs">—</strong>
+                </div>
+
+                <div class="workout-row">
+                  <span>Fat</span>
+                  <strong>0–10 g</strong>
+                </div>
+              </article>
+
+              <article class="workout-card">
+                <h4>Post-workout</h4>
+
+                <div class="workout-row">
+                  <span>Protein</span>
+                  <strong id="post-protein">—</strong>
+                </div>
+
+                <div class="workout-row">
+                  <span>Carbs</span>
+                  <strong id="post-carbs">—</strong>
+                </div>
+
+                <div class="workout-row">
+                  <span>Fat</span>
+                  <strong>0–10 g</strong>
+                </div>
+              </article>
+            </div>
+          </section>
 
           <div class="results-actions">
-            <button class="btn btn-secondary" id="edit-button" type="button">
-              Edit answers
-            </button>
-            <button class="btn btn-primary" id="restart-button" type="button">
-              Start again
-            </button>
+            <button class="btn btn-secondary" id="edit-button" type="button">Edit answers</button>
+            <button class="btn btn-primary" id="restart-button" type="button">Start again</button>
           </div>
         </section>
       </div>
@@ -893,6 +1013,41 @@
   <script>
     (() => {
       "use strict";
+
+      /*
+        Change this value whenever you want a different access code.
+        This is client-side protection for a static GitHub Pages website.
+      */
+      const ACCESS_CODE = "Issa_Is_My_Daddy";
+
+      const accessScreen = document.getElementById("access-screen");
+      const calculatorScreen = document.getElementById("calculator-screen");
+      const accessForm = document.getElementById("access-form");
+      const accessInput = document.getElementById("access-code-input");
+      const accessError = document.getElementById("access-error");
+
+      function unlockCalculator() {
+        sessionStorage.setItem("calorieCalculatorUnlocked", "true");
+        accessScreen.hidden = true;
+        calculatorScreen.hidden = false;
+      }
+
+      if (sessionStorage.getItem("calorieCalculatorUnlocked") === "true") {
+        unlockCalculator();
+      }
+
+      accessForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        if (accessInput.value === ACCESS_CODE) {
+          accessError.hidden = true;
+          unlockCalculator();
+          return;
+        }
+
+        accessError.hidden = false;
+        accessInput.select();
+      });
 
       const totalSteps = 7;
       let currentStep = 0;
@@ -925,32 +1080,23 @@
         protein: document.getElementById("protein-output"),
         fat: document.getElementById("fat-output"),
         carbs: document.getElementById("carbs-output"),
-        bmr: document.getElementById("bmr-output"),
         goalLabel: document.getElementById("goal-label"),
-        summary: document.getElementById("summary-line"),
+        recapSex: document.getElementById("recap-sex"),
+        recapWeight: document.getElementById("recap-weight"),
+        recapBodyFat: document.getElementById("recap-body-fat"),
+        recapActivity: document.getElementById("recap-activity"),
+        recapBmr: document.getElementById("recap-bmr"),
+        preProtein: document.getElementById("pre-protein"),
+        preCarbs: document.getElementById("pre-carbs"),
+        postProtein: document.getElementById("post-protein"),
+        postCarbs: document.getElementById("post-carbs"),
       };
 
       const validationRules = {
-        weight: {
-          min: 30,
-          max: 300,
-          message: "Enter a weight between 30 and 300 kg.",
-        },
-        height: {
-          min: 100,
-          max: 250,
-          message: "Enter a height between 100 and 250 cm.",
-        },
-        age: {
-          min: 14,
-          max: 100,
-          message: "Enter an age between 14 and 100 years.",
-        },
-        bodyFat: {
-          min: 3,
-          max: 60,
-          message: "Enter a body-fat percentage between 3% and 60%.",
-        },
+        weight: { min: 30, max: 300, message: "Enter a weight between 30 and 300 kg." },
+        height: { min: 100, max: 250, message: "Enter a height between 100 and 250 cm." },
+        age: { min: 14, max: 100, message: "Enter an age between 14 and 100 years." },
+        bodyFat: { min: 3, max: 60, message: "Enter a body-fat percentage between 3% and 60%." },
       };
 
       const stepFieldMap = {
@@ -991,8 +1137,7 @@
           return;
         }
 
-        const percentage = ((currentStep + 1) / totalSteps) * 100;
-        progressBar.style.width = `${percentage}%`;
+        progressBar.style.width = `${((currentStep + 1) / totalSteps) * 100}%`;
         stepCount.textContent = `${currentStep + 1} / ${totalSteps}`;
       }
 
@@ -1008,12 +1153,9 @@
 
         updateProgress();
 
-        const focusTarget = steps[currentStep].querySelector(
-          "input:not([type='radio']), select"
-        );
-
+        const focusTarget = steps[currentStep].querySelector("input:not([type='radio']), select");
         if (focusTarget) {
-          window.setTimeout(() => focusTarget.focus(), 160);
+          window.setTimeout(() => focusTarget.focus(), 150);
         }
       }
 
@@ -1029,10 +1171,7 @@
         const value = parseNumber(input);
         const error = errors[fieldName];
 
-        const valid =
-          Number.isFinite(value) &&
-          value >= rule.min &&
-          value <= rule.max;
+        const valid = Number.isFinite(value) && value >= rule.min && value <= rule.max;
 
         if (!valid) {
           error.textContent = rule.message;
@@ -1054,11 +1193,6 @@
         const activity = parseNumber(fields.activity);
         const bodyFat = parseNumber(fields.bodyFat);
 
-        const values = [weight, height, age, activity, bodyFat];
-        if (values.some((value) => !Number.isFinite(value))) {
-          throw new Error("One or more calculator inputs are invalid.");
-        }
-
         const bmr =
           sex === "male"
             ? 10 * weight + 6.25 * height - 5 * age + 5
@@ -1079,7 +1213,6 @@
         };
 
         const goalCalories = maintenance * goalMultipliers[goal];
-
         const lbm = ((100 - bodyFat) / 100) * weight;
 
         const proteinCoefficient =
@@ -1087,9 +1220,7 @@
             ? -0.016 * bodyFat + 1.68
             : -0.0125 * bodyFat + 1.7;
 
-        const proteinGrams =
-          (proteinCoefficient * lbm) / 0.45359237;
-
+        const proteinGrams = (proteinCoefficient * lbm) / 0.45359237;
         const proteinCalories = proteinGrams * 4;
 
         const fatPercentage =
@@ -1100,13 +1231,25 @@
         const fatCalories = fatPercentage * goalCalories;
         const fatGrams = fatCalories / 9;
 
-        const carbohydrateCalories =
-          goalCalories - proteinCalories - fatCalories;
+        const carbohydrateCalories = goalCalories - proteinCalories - fatCalories;
+        const carbohydrateGrams = Math.max(0, carbohydrateCalories / 4);
 
-        const carbohydrateGrams =
-          Math.max(0, carbohydrateCalories / 4);
+        /*
+          Workout nutrition equations supplied by the user:
+          total protein = 0.5 × body weight
+          total carbs   = 1.0 × body weight
+          total fat     = 0–20 g
 
-        outputs.bmr.textContent = format(bmr);
+          The totals are divided equally between pre-workout and post-workout.
+        */
+        const workoutProteinTotal = 0.5 * weight;
+        const workoutCarbsTotal = weight;
+
+        const preProtein = workoutProteinTotal / 2;
+        const postProtein = workoutProteinTotal / 2;
+        const preCarbs = workoutCarbsTotal / 2;
+        const postCarbs = workoutCarbsTotal / 2;
+
         outputs.maintenance.textContent = format(maintenance);
         outputs.goal.textContent = format(goalCalories);
         outputs.lbm.textContent = format(lbm);
@@ -1114,10 +1257,17 @@
         outputs.fat.textContent = format(fatGrams);
         outputs.carbs.textContent = format(carbohydrateGrams);
         outputs.goalLabel.textContent = `${goalNames[goal]} calories`;
-        outputs.summary.textContent =
-          `${sex === "male" ? "Male" : "Female"} • ` +
-          `${format(weight)} kg • ${format(bodyFat)}% body fat • ` +
-          `Activity factor ${format(activity, 3)}`;
+
+        outputs.recapSex.textContent = sex === "male" ? "Male" : "Female";
+        outputs.recapWeight.textContent = `${format(weight)} kg`;
+        outputs.recapBodyFat.textContent = `${format(bodyFat)}% fat`;
+        outputs.recapActivity.textContent = `Activity ${format(activity, 3)}`;
+        outputs.recapBmr.textContent = `BMR ${format(bmr)} kcal`;
+
+        outputs.preProtein.textContent = `${format(preProtein)} g`;
+        outputs.postProtein.textContent = `${format(postProtein)} g`;
+        outputs.preCarbs.textContent = `${format(preCarbs)} g`;
+        outputs.postCarbs.textContent = `${format(postCarbs)} g`;
       }
 
       function showResults() {
@@ -1128,32 +1278,23 @@
         resultsScreen.classList.add("active");
         updateProgress();
 
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        });
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
 
       document.querySelectorAll(".next-button").forEach((button) => {
         button.addEventListener("click", () => {
-          if (!validateCurrentStep()) {
-            return;
+          if (validateCurrentStep()) {
+            showStep(currentStep + 1);
           }
-
-          showStep(currentStep + 1);
         });
       });
 
       document.querySelectorAll(".back-button").forEach((button) => {
-        button.addEventListener("click", () => {
-          showStep(currentStep - 1);
-        });
+        button.addEventListener("click", () => showStep(currentStep - 1));
       });
 
       document.querySelectorAll("input[type='radio']").forEach((radio) => {
-        radio.addEventListener("change", () => {
-          setChoiceStyles(radio.name);
-        });
+        radio.addEventListener("change", () => setChoiceStyles(radio.name));
       });
 
       document.querySelectorAll(".choice-card").forEach((card) => {
@@ -1176,12 +1317,7 @@
 
       form.addEventListener("submit", (event) => {
         event.preventDefault();
-
-        try {
-          showResults();
-        } catch (error) {
-          alert(error.message);
-        }
+        showResults();
       });
 
       document.getElementById("edit-button").addEventListener("click", () => {
@@ -1211,14 +1347,9 @@
         if (
           event.key === "Enter" &&
           !resultsScreen.classList.contains("active") &&
-          currentStep < totalSteps - 1
+          currentStep < totalSteps - 1 &&
+          document.activeElement?.tagName !== "SELECT"
         ) {
-          const activeElement = document.activeElement;
-
-          if (activeElement?.tagName === "SELECT") {
-            return;
-          }
-
           event.preventDefault();
 
           if (validateCurrentStep()) {
