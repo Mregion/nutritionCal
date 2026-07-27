@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="description"
+    content="A simple calorie and macronutrient calculator using weight, height, age, sex, activity factor and body-fat percentage."
+  />
+  <title>Calorie & Macro Calculator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="page-shell">
+    <section class="calculator-card">
+      <header class="hero">
+        <p class="eyebrow">Nutrition calculator</p>
+        <h1>Calorie & Macro Calculator</h1>
+        <p class="subtitle">
+          Enter your information to estimate maintenance calories, goal calories,
+          lean body mass and daily macronutrients.
+        </p>
+      </header>
+
+      <div class="layout">
+        <section class="panel input-panel" aria-labelledby="input-title">
+          <div class="panel-heading">
+            <div>
+              <p class="section-number">01</p>
+              <h2 id="input-title">Your information</h2>
+            </div>
+            <div class="example-buttons" aria-label="Load example values">
+              <button class="secondary-button" type="button" id="male-example">
+                Male example
+              </button>
+              <button class="secondary-button" type="button" id="female-example">
+                Female example
+              </button>
+            </div>
+          </div>
+
+          <form id="calculator-form" novalidate>
+            <div class="form-grid">
+              <label class="field">
+                <span>Sex</span>
+                <select id="sex" required>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Goal</span>
+                <select id="goal" required>
+                  <option value="cut">Cut — 80% of maintenance</option>
+                  <option value="maintain">Maintain — 100%</option>
+                  <option value="bulk">Bulk — 125%</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Weight</span>
+                <div class="input-with-unit">
+                  <input
+                    id="weight"
+                    type="number"
+                    min="30"
+                    max="300"
+                    step="0.1"
+                    value="75"
+                    required
+                  />
+                  <small>kg</small>
+                </div>
+              </label>
+
+              <label class="field">
+                <span>Height</span>
+                <div class="input-with-unit">
+                  <input
+                    id="height"
+                    type="number"
+                    min="100"
+                    max="250"
+                    step="0.1"
+                    value="174"
+                    required
+                  />
+                  <small>cm</small>
+                </div>
+              </label>
+
+              <label class="field">
+                <span>Age</span>
+                <div class="input-with-unit">
+                  <input
+                    id="age"
+                    type="number"
+                    min="14"
+                    max="100"
+                    step="1"
+                    value="25"
+                    required
+                  />
+                  <small>years</small>
+                </div>
+              </label>
+
+              <label class="field">
+                <span>Activity factor</span>
+                <div class="input-with-unit">
+                  <input
+                    id="activity"
+                    type="number"
+                    min="1"
+                    max="2.5"
+                    step="0.01"
+                    value="1.70"
+                    list="activity-options"
+                    required
+                  />
+                  <small>× BMR</small>
+                </div>
+                <datalist id="activity-options">
+                  <option value="1.20">Sedentary</option>
+                  <option value="1.375">Lightly active</option>
+                  <option value="1.50">Moderately active</option>
+                  <option value="1.55">Moderately active</option>
+                  <option value="1.70">Very active</option>
+                  <option value="1.725">Very active</option>
+                  <option value="1.90">Extremely active</option>
+                </datalist>
+              </label>
+
+              <label class="field field-wide">
+                <span>Body-fat percentage</span>
+                <div class="input-with-unit">
+                  <input
+                    id="body-fat"
+                    type="number"
+                    min="3"
+                    max="60"
+                    step="0.1"
+                    value="16.5"
+                    required
+                  />
+                  <small>%</small>
+                </div>
+              </label>
+            </div>
+
+            <p id="error-message" class="message error-message" role="alert" hidden></p>
+
+            <button class="primary-button" type="submit">
+              Calculate results
+            </button>
+          </form>
+        </section>
+
+        <section class="panel results-panel" aria-labelledby="results-title">
+          <div class="panel-heading">
+            <div>
+              <p class="section-number">02</p>
+              <h2 id="results-title">Your results</h2>
+            </div>
+            <p class="live-label">Updates instantly</p>
+          </div>
+
+          <div class="results-grid" aria-live="polite">
+            <article class="result-card featured">
+              <p>Maintenance</p>
+              <strong id="maintenance-output">—</strong>
+              <span>kcal/day</span>
+            </article>
+
+            <article class="result-card featured">
+              <p>Goal</p>
+              <strong id="goal-output">—</strong>
+              <span>kcal/day</span>
+            </article>
+
+            <article class="result-card">
+              <p>Lean body mass</p>
+              <strong id="lbm-output">—</strong>
+              <span>kg</span>
+            </article>
+
+            <article class="result-card macro-card">
+              <p>Protein</p>
+              <strong id="protein-output">—</strong>
+              <span>g/day</span>
+            </article>
+
+            <article class="result-card macro-card">
+              <p>Fat</p>
+              <strong id="fat-output">—</strong>
+              <span>g/day</span>
+            </article>
+
+            <article class="result-card macro-card">
+              <p>Carbs</p>
+              <strong id="carbs-output">—</strong>
+              <span>g/day</span>
+            </article>
+          </div>
+
+          <div class="details-card">
+            <div>
+              <p>Estimated BMR</p>
+              <strong><span id="bmr-output">—</span> kcal/day</strong>
+            </div>
+            <div>
+              <p>Selected goal</p>
+              <strong id="goal-name-output">Cut</strong>
+            </div>
+          </div>
+
+          <p id="warning-message" class="message warning-message" hidden></p>
+        </section>
+      </div>
+
+      <footer>
+        <p>
+          These values are estimates, not medical advice. Anyone under 18 should
+          discuss calorie targets with a qualified healthcare professional.
+        </p>
+      </footer>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
