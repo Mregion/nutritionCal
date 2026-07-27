@@ -5,229 +5,1232 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta
     name="description"
-    content="A simple calorie and macronutrient calculator using weight, height, age, sex, activity factor and body-fat percentage."
+    content="A step-by-step calorie and macronutrient calculator."
   />
   <title>Calorie & Macro Calculator</title>
-  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    :root {
+      --bg-deep: #111827;
+      --bg-mid: #1f2937;
+      --card: rgba(255, 255, 255, 0.94);
+      --card-soft: rgba(255, 255, 255, 0.78);
+      --text: #182033;
+      --muted: #687086;
+      --line: #dfe4ee;
+      --accent: #ff7a00;
+      --accent-dark: #dd6200;
+      --accent-soft: #fff0e1;
+      --success: #1f8b5b;
+      --danger: #b63838;
+      --danger-bg: #fff0f0;
+      --shadow: 0 30px 80px rgba(0, 0, 0, 0.28);
+      --radius-xl: 30px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 320px;
+      background: var(--bg-deep);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: var(--text);
+      font-family:
+        Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(255, 122, 0, 0.34), transparent 28rem),
+        radial-gradient(circle at 90% 15%, rgba(85, 124, 255, 0.25), transparent 25rem),
+        linear-gradient(135deg, var(--bg-deep), var(--bg-mid));
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      z-index: 0;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      filter: blur(12px);
+      opacity: 0.26;
+      pointer-events: none;
+    }
+
+    body::before {
+      top: 62%;
+      left: -170px;
+      background: #ff7a00;
+    }
+
+    body::after {
+      top: -170px;
+      right: -110px;
+      background: #7694ff;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app-shell {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      min-height: 100vh;
+      place-items: center;
+      padding: 30px 18px;
+    }
+
+    .calculator {
+      width: min(840px, 100%);
+      min-height: 650px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: var(--radius-xl);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 24px 30px 18px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.86);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), #ff9d42);
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: 900;
+      box-shadow: 0 10px 22px rgba(255, 122, 0, 0.28);
+    }
+
+    .brand-copy p,
+    .brand-copy h1 {
+      margin: 0;
+    }
+
+    .brand-copy p {
+      margin-bottom: 2px;
+      color: var(--accent-dark);
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .brand-copy h1 {
+      font-size: 1.05rem;
+      letter-spacing: -0.03em;
+    }
+
+    .step-count {
+      min-width: 72px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-dark);
+      padding: 8px 12px;
+      text-align: center;
+      font-size: 0.76rem;
+      font-weight: 800;
+    }
+
+    .progress-track {
+      height: 7px;
+      background: #eef1f6;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      border-radius: 0 999px 999px 0;
+      background: linear-gradient(90deg, var(--accent), #ffab5c);
+      transition: width 280ms ease;
+    }
+
+    .content {
+      min-height: 515px;
+      padding: 38px 34px 30px;
+    }
+
+    .step,
+    .results-screen {
+      display: none;
+      animation: enter 280ms ease;
+    }
+
+    .step.active,
+    .results-screen.active {
+      display: block;
+    }
+
+    @keyframes enter {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .question-wrap {
+      display: grid;
+      min-height: 430px;
+      align-content: center;
+      max-width: 590px;
+      margin: 0 auto;
+    }
+
+    .step-kicker {
+      margin: 0 0 10px;
+      color: var(--accent-dark);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .question-wrap h2,
+    .results-screen h2 {
+      margin: 0;
+      color: var(--text);
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      line-height: 1.05;
+      letter-spacing: -0.055em;
+    }
+
+    .question-help {
+      max-width: 540px;
+      margin: 15px 0 28px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.65;
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .choice-card {
+      position: relative;
+      display: grid;
+      min-height: 118px;
+      align-content: center;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: #fff;
+      padding: 20px;
+      transition:
+        transform 160ms ease,
+        border-color 160ms ease,
+        background 160ms ease,
+        box-shadow 160ms ease;
+    }
+
+    .choice-card:hover {
+      border-color: rgba(255, 122, 0, 0.65);
+      transform: translateY(-2px);
+      box-shadow: 0 13px 28px rgba(40, 50, 75, 0.1);
+    }
+
+    .choice-card.selected {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      box-shadow: 0 0 0 4px rgba(255, 122, 0, 0.1);
+    }
+
+    .choice-card input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .choice-title {
+      margin-bottom: 5px;
+      font-weight: 850;
+    }
+
+    .choice-description {
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    .input-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      border: 2px solid var(--line);
+      border-radius: 20px;
+      background: #fff;
+      transition:
+        border-color 160ms ease,
+        box-shadow 160ms ease;
+    }
+
+    .input-box:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 5px rgba(255, 122, 0, 0.11);
+    }
+
+    .input-box input,
+    .input-box select {
+      width: 100%;
+      min-height: 78px;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+      padding: 0 112px 0 24px;
+      font-size: 1.55rem;
+      font-weight: 800;
+    }
+
+    .input-box select {
+      appearance: none;
+      padding-right: 52px;
+      font-size: 1.1rem;
+    }
+
+    .input-unit {
+      position: absolute;
+      right: 22px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 750;
+      pointer-events: none;
+    }
+
+    .activity-list {
+      margin: 14px 0 0;
+      padding: 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.7;
+      list-style: none;
+    }
+
+    .error {
+      margin: 14px 0 0;
+      border-radius: 12px;
+      background: var(--danger-bg);
+      color: var(--danger);
+      padding: 11px 13px;
+      font-size: 0.82rem;
+      font-weight: 650;
+    }
+
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .btn {
+      min-height: 52px;
+      border-radius: 14px;
+      padding: 0 22px;
+      font-weight: 850;
+      transition:
+        transform 150ms ease,
+        background 150ms ease,
+        border-color 150ms ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      margin-left: auto;
+      border: 0;
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 12px 24px rgba(255, 122, 0, 0.24);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-dark);
+    }
+
+    .btn-secondary {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+    }
+
+    .results-screen {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .results-heading {
+      margin-bottom: 26px;
+      text-align: center;
+    }
+
+    .results-heading .question-help {
+      margin-right: auto;
+      margin-left: auto;
+    }
+
+    .calorie-summary {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .calorie-card {
+      border-radius: var(--radius-lg);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.2), transparent),
+        var(--accent);
+      color: #fff;
+      padding: 24px;
+      box-shadow: 0 15px 30px rgba(255, 122, 0, 0.2);
+    }
+
+    .calorie-card.secondary {
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.15), transparent),
+        #2a3550;
+      box-shadow: 0 15px 30px rgba(27, 39, 66, 0.18);
+    }
+
+    .result-label {
+      margin: 0 0 12px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .calorie-value {
+      display: block;
+      margin-bottom: 4px;
+      font-size: clamp(2rem, 6vw, 3rem);
+      letter-spacing: -0.06em;
+    }
+
+    .result-unit {
+      color: rgba(255, 255, 255, 0.76);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .macro-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .macro-card {
+      min-height: 126px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .macro-card p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .macro-card strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 1.7rem;
+      letter-spacing: -0.05em;
+    }
+
+    .macro-card span {
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .result-note {
+      margin: 16px 0 0;
+      border-radius: 14px;
+      background: #f6f8fb;
+      color: var(--muted);
+      padding: 14px;
+      font-size: 0.78rem;
+      line-height: 1.55;
+      text-align: center;
+    }
+
+    .results-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .summary-line {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 650;
+      text-align: center;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 700px) {
+      .app-shell {
+        padding: 0;
+      }
+
+      .calculator {
+        min-height: 100vh;
+        border: 0;
+        border-radius: 0;
+      }
+
+      .topbar {
+        padding: 20px 18px 16px;
+      }
+
+      .content {
+        padding: 28px 18px 24px;
+      }
+
+      .question-wrap {
+        min-height: 470px;
+      }
+
+      .option-grid,
+      .calorie-summary {
+        grid-template-columns: 1fr;
+      }
+
+      .macro-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .step-count {
+        min-width: auto;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .brand-copy h1 {
+        font-size: 0.93rem;
+      }
+
+      .step-count {
+        padding: 7px 9px;
+        font-size: 0.7rem;
+      }
+
+      .question-wrap h2,
+      .results-screen h2 {
+        font-size: 2rem;
+      }
+
+      .input-box input {
+        font-size: 1.35rem;
+      }
+    }
+  </style>
 </head>
+
 <body>
-  <main class="page-shell">
-    <section class="calculator-card">
-      <header class="hero">
-        <p class="eyebrow">Nutrition calculator</p>
-        <h1>Calorie & Macro Calculator</h1>
-        <p class="subtitle">
-          Enter your information to estimate maintenance calories, goal calories,
-          lean body mass and daily macronutrients.
-        </p>
+  <main class="app-shell">
+    <section class="calculator">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark">C</div>
+          <div class="brand-copy">
+            <p>Nutrition tool</p>
+            <h1>Calorie & Macro Calculator</h1>
+          </div>
+        </div>
+
+        <div class="step-count" id="step-count">1 / 7</div>
       </header>
 
-      <div class="layout">
-        <section class="panel input-panel" aria-labelledby="input-title">
-          <div class="panel-heading">
-            <div>
-              <p class="section-number">01</p>
-              <h2 id="input-title">Your information</h2>
-            </div>
-            <div class="example-buttons" aria-label="Load example values">
-              <button class="secondary-button" type="button" id="male-example">
-                Male example
-              </button>
-              <button class="secondary-button" type="button" id="female-example">
-                Female example
-              </button>
-            </div>
-          </div>
+      <div class="progress-track" aria-hidden="true">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
 
-          <form id="calculator-form" novalidate>
-            <div class="form-grid">
-              <label class="field">
-                <span>Sex</span>
-                <select id="sex" required>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
+      <div class="content">
+        <form id="calculator-form" novalidate>
+          <section class="step active" data-step="0">
+            <div class="question-wrap">
+              <p class="step-kicker">Step 1</p>
+              <h2>What is your sex?</h2>
+              <p class="question-help">
+                This changes the BMR equation used by the calculator.
+              </p>
+
+              <div class="option-grid" data-choice-group="sex">
+                <label class="choice-card selected">
+                  <input type="radio" name="sex" value="male" checked />
+                  <span class="choice-title">Male</span>
+                  <span class="choice-description">Uses the male BMR and macro equations.</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="radio" name="sex" value="female" />
+                  <span class="choice-title">Female</span>
+                  <span class="choice-description">Uses the female BMR and macro equations.</span>
+                </label>
+              </div>
+
+              <div class="navigation">
+                <button class="btn btn-primary next-button" type="button">Continue</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="step" data-step="1">
+            <div class="question-wrap">
+              <p class="step-kicker">Step 2</p>
+              <h2>What is your weight?</h2>
+              <p class="question-help">Enter your current body weight in kilograms.</p>
+
+              <label class="input-box">
+                <input
+                  id="weight"
+                  type="number"
+                  min="30"
+                  max="300"
+                  step="0.1"
+                  value="75"
+                  inputmode="decimal"
+                  required
+                />
+                <span class="input-unit">kg</span>
+              </label>
+
+              <p class="error" id="weight-error" hidden></p>
+
+              <div class="navigation">
+                <button class="btn btn-secondary back-button" type="button">Back</button>
+                <button class="btn btn-primary next-button" type="button">Continue</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="step" data-step="2">
+            <div class="question-wrap">
+              <p class="step-kicker">Step 3</p>
+              <h2>What is your height?</h2>
+              <p class="question-help">Enter your height in centimeters.</p>
+
+              <label class="input-box">
+                <input
+                  id="height"
+                  type="number"
+                  min="100"
+                  max="250"
+                  step="0.1"
+                  value="174"
+                  inputmode="decimal"
+                  required
+                />
+                <span class="input-unit">cm</span>
+              </label>
+
+              <p class="error" id="height-error" hidden></p>
+
+              <div class="navigation">
+                <button class="btn btn-secondary back-button" type="button">Back</button>
+                <button class="btn btn-primary next-button" type="button">Continue</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="step" data-step="3">
+            <div class="question-wrap">
+              <p class="step-kicker">Step 4</p>
+              <h2>How old are you?</h2>
+              <p class="question-help">Enter your age in years.</p>
+
+              <label class="input-box">
+                <input
+                  id="age"
+                  type="number"
+                  min="14"
+                  max="100"
+                  step="1"
+                  value="25"
+                  inputmode="numeric"
+                  required
+                />
+                <span class="input-unit">years</span>
+              </label>
+
+              <p class="error" id="age-error" hidden></p>
+
+              <div class="navigation">
+                <button class="btn btn-secondary back-button" type="button">Back</button>
+                <button class="btn btn-primary next-button" type="button">Continue</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="step" data-step="4">
+            <div class="question-wrap">
+              <p class="step-kicker">Step 5</p>
+              <h2>Choose your activity factor</h2>
+              <p class="question-help">
+                Pick the value that best represents your normal weekly activity.
+              </p>
+
+              <label class="input-box">
+                <select id="activity" required>
+                  <option value="1.20">1.20 — Sedentary</option>
+                  <option value="1.375">1.375 — Lightly active</option>
+                  <option value="1.50">1.50 — Moderately active</option>
+                  <option value="1.55">1.55 — Moderately active</option>
+                  <option value="1.70" selected>1.70 — Very active</option>
+                  <option value="1.725">1.725 — Very active</option>
+                  <option value="1.90">1.90 — Extremely active</option>
                 </select>
               </label>
 
-              <label class="field">
-                <span>Goal</span>
-                <select id="goal" required>
-                  <option value="cut">Cut — 80% of maintenance</option>
-                  <option value="maintain">Maintain — 100%</option>
-                  <option value="bulk">Bulk — 125%</option>
-                </select>
-              </label>
+              <ul class="activity-list">
+                <li>1.20: little structured activity</li>
+                <li>1.375–1.55: light to moderate weekly training</li>
+                <li>1.70–1.90: frequent or demanding training</li>
+              </ul>
 
-              <label class="field">
-                <span>Weight</span>
-                <div class="input-with-unit">
-                  <input
-                    id="weight"
-                    type="number"
-                    min="30"
-                    max="300"
-                    step="0.1"
-                    value="75"
-                    required
-                  />
-                  <small>kg</small>
-                </div>
-              </label>
-
-              <label class="field">
-                <span>Height</span>
-                <div class="input-with-unit">
-                  <input
-                    id="height"
-                    type="number"
-                    min="100"
-                    max="250"
-                    step="0.1"
-                    value="174"
-                    required
-                  />
-                  <small>cm</small>
-                </div>
-              </label>
-
-              <label class="field">
-                <span>Age</span>
-                <div class="input-with-unit">
-                  <input
-                    id="age"
-                    type="number"
-                    min="14"
-                    max="100"
-                    step="1"
-                    value="25"
-                    required
-                  />
-                  <small>years</small>
-                </div>
-              </label>
-
-              <label class="field">
-                <span>Activity factor</span>
-                <div class="input-with-unit">
-                  <input
-                    id="activity"
-                    type="number"
-                    min="1"
-                    max="2.5"
-                    step="0.01"
-                    value="1.70"
-                    list="activity-options"
-                    required
-                  />
-                  <small>× BMR</small>
-                </div>
-                <datalist id="activity-options">
-                  <option value="1.20">Sedentary</option>
-                  <option value="1.375">Lightly active</option>
-                  <option value="1.50">Moderately active</option>
-                  <option value="1.55">Moderately active</option>
-                  <option value="1.70">Very active</option>
-                  <option value="1.725">Very active</option>
-                  <option value="1.90">Extremely active</option>
-                </datalist>
-              </label>
-
-              <label class="field field-wide">
-                <span>Body-fat percentage</span>
-                <div class="input-with-unit">
-                  <input
-                    id="body-fat"
-                    type="number"
-                    min="3"
-                    max="60"
-                    step="0.1"
-                    value="16.5"
-                    required
-                  />
-                  <small>%</small>
-                </div>
-              </label>
+              <div class="navigation">
+                <button class="btn btn-secondary back-button" type="button">Back</button>
+                <button class="btn btn-primary next-button" type="button">Continue</button>
+              </div>
             </div>
+          </section>
 
-            <p id="error-message" class="message error-message" role="alert" hidden></p>
+          <section class="step" data-step="5">
+            <div class="question-wrap">
+              <p class="step-kicker">Step 6</p>
+              <h2>What is your body-fat percentage?</h2>
+              <p class="question-help">
+                Enter your latest estimate. This is used for lean body mass and
+                macro calculations.
+              </p>
 
-            <button class="primary-button" type="submit">
-              Calculate results
-            </button>
-          </form>
-        </section>
+              <label class="input-box">
+                <input
+                  id="body-fat"
+                  type="number"
+                  min="3"
+                  max="60"
+                  step="0.1"
+                  value="16.5"
+                  inputmode="decimal"
+                  required
+                />
+                <span class="input-unit">%</span>
+              </label>
 
-        <section class="panel results-panel" aria-labelledby="results-title">
-          <div class="panel-heading">
-            <div>
-              <p class="section-number">02</p>
-              <h2 id="results-title">Your results</h2>
+              <p class="error" id="body-fat-error" hidden></p>
+
+              <div class="navigation">
+                <button class="btn btn-secondary back-button" type="button">Back</button>
+                <button class="btn btn-primary next-button" type="button">Continue</button>
+              </div>
             </div>
-            <p class="live-label">Updates instantly</p>
+          </section>
+
+          <section class="step" data-step="6">
+            <div class="question-wrap">
+              <p class="step-kicker">Step 7</p>
+              <h2>What is your goal?</h2>
+              <p class="question-help">
+                The selected multiplier is applied to your calculated maintenance.
+              </p>
+
+              <div class="option-grid" data-choice-group="goal">
+                <label class="choice-card selected">
+                  <input type="radio" name="goal" value="cut" checked />
+                  <span class="choice-title">Cut</span>
+                  <span class="choice-description">80% of maintenance calories.</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="radio" name="goal" value="maintain" />
+                  <span class="choice-title">Maintain</span>
+                  <span class="choice-description">100% of maintenance calories.</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="radio" name="goal" value="bulk" />
+                  <span class="choice-title">Bulk</span>
+                  <span class="choice-description">125% of maintenance calories.</span>
+                </label>
+              </div>
+
+              <div class="navigation">
+                <button class="btn btn-secondary back-button" type="button">Back</button>
+                <button class="btn btn-primary" id="calculate-button" type="submit">
+                  Show my results
+                </button>
+              </div>
+            </div>
+          </section>
+        </form>
+
+        <section class="results-screen" id="results-screen" aria-live="polite">
+          <div class="results-heading">
+            <p class="step-kicker">Calculation complete</p>
+            <h2>Your daily targets</h2>
+            <p class="question-help">
+              These values use the exact equations you provided.
+            </p>
+            <p class="summary-line" id="summary-line"></p>
           </div>
 
-          <div class="results-grid" aria-live="polite">
-            <article class="result-card featured">
-              <p>Maintenance</p>
-              <strong id="maintenance-output">—</strong>
-              <span>kcal/day</span>
+          <div class="calorie-summary">
+            <article class="calorie-card secondary">
+              <p class="result-label">Maintenance</p>
+              <strong class="calorie-value" id="maintenance-output">—</strong>
+              <span class="result-unit">kcal/day</span>
             </article>
 
-            <article class="result-card featured">
-              <p>Goal</p>
-              <strong id="goal-output">—</strong>
-              <span>kcal/day</span>
+            <article class="calorie-card">
+              <p class="result-label" id="goal-label">Goal calories</p>
+              <strong class="calorie-value" id="goal-output">—</strong>
+              <span class="result-unit">kcal/day</span>
             </article>
+          </div>
 
-            <article class="result-card">
-              <p>Lean body mass</p>
+          <div class="macro-grid">
+            <article class="macro-card">
+              <p>LBM</p>
               <strong id="lbm-output">—</strong>
               <span>kg</span>
             </article>
 
-            <article class="result-card macro-card">
+            <article class="macro-card">
               <p>Protein</p>
               <strong id="protein-output">—</strong>
               <span>g/day</span>
             </article>
 
-            <article class="result-card macro-card">
+            <article class="macro-card">
               <p>Fat</p>
               <strong id="fat-output">—</strong>
               <span>g/day</span>
             </article>
 
-            <article class="result-card macro-card">
+            <article class="macro-card">
               <p>Carbs</p>
               <strong id="carbs-output">—</strong>
               <span>g/day</span>
             </article>
           </div>
 
-          <div class="details-card">
-            <div>
-              <p>Estimated BMR</p>
-              <strong><span id="bmr-output">—</span> kcal/day</strong>
-            </div>
-            <div>
-              <p>Selected goal</p>
-              <strong id="goal-name-output">Cut</strong>
-            </div>
-          </div>
+          <p class="result-note">
+            Estimated BMR: <strong id="bmr-output">—</strong> kcal/day.
+            This calculator is an estimate and is not medical advice.
+          </p>
 
-          <p id="warning-message" class="message warning-message" hidden></p>
+          <div class="results-actions">
+            <button class="btn btn-secondary" id="edit-button" type="button">
+              Edit answers
+            </button>
+            <button class="btn btn-primary" id="restart-button" type="button">
+              Start again
+            </button>
+          </div>
         </section>
       </div>
-
-      <footer>
-        <p>
-          These values are estimates, not medical advice. Anyone under 18 should
-          discuss calorie targets with a qualified healthcare professional.
-        </p>
-      </footer>
     </section>
   </main>
 
-  <script src="script.js"></script>
+  <script>
+    (() => {
+      "use strict";
+
+      const totalSteps = 7;
+      let currentStep = 0;
+
+      const form = document.getElementById("calculator-form");
+      const steps = [...document.querySelectorAll(".step")];
+      const resultsScreen = document.getElementById("results-screen");
+      const progressBar = document.getElementById("progress-bar");
+      const stepCount = document.getElementById("step-count");
+
+      const fields = {
+        weight: document.getElementById("weight"),
+        height: document.getElementById("height"),
+        age: document.getElementById("age"),
+        activity: document.getElementById("activity"),
+        bodyFat: document.getElementById("body-fat"),
+      };
+
+      const errors = {
+        weight: document.getElementById("weight-error"),
+        height: document.getElementById("height-error"),
+        age: document.getElementById("age-error"),
+        bodyFat: document.getElementById("body-fat-error"),
+      };
+
+      const outputs = {
+        maintenance: document.getElementById("maintenance-output"),
+        goal: document.getElementById("goal-output"),
+        lbm: document.getElementById("lbm-output"),
+        protein: document.getElementById("protein-output"),
+        fat: document.getElementById("fat-output"),
+        carbs: document.getElementById("carbs-output"),
+        bmr: document.getElementById("bmr-output"),
+        goalLabel: document.getElementById("goal-label"),
+        summary: document.getElementById("summary-line"),
+      };
+
+      const validationRules = {
+        weight: {
+          min: 30,
+          max: 300,
+          message: "Enter a weight between 30 and 300 kg.",
+        },
+        height: {
+          min: 100,
+          max: 250,
+          message: "Enter a height between 100 and 250 cm.",
+        },
+        age: {
+          min: 14,
+          max: 100,
+          message: "Enter an age between 14 and 100 years.",
+        },
+        bodyFat: {
+          min: 3,
+          max: 60,
+          message: "Enter a body-fat percentage between 3% and 60%.",
+        },
+      };
+
+      const stepFieldMap = {
+        1: "weight",
+        2: "height",
+        3: "age",
+        5: "bodyFat",
+      };
+
+      function selectedRadio(name) {
+        return document.querySelector(`input[name="${name}"]:checked`)?.value;
+      }
+
+      function parseNumber(input) {
+        return Number.parseFloat(input.value);
+      }
+
+      function format(value, decimals = 1) {
+        return new Intl.NumberFormat("en-US", {
+          minimumFractionDigits: decimals,
+          maximumFractionDigits: decimals,
+        }).format(value);
+      }
+
+      function setChoiceStyles(groupName) {
+        document
+          .querySelectorAll(`[data-choice-group="${groupName}"] .choice-card`)
+          .forEach((card) => {
+            const radio = card.querySelector("input[type='radio']");
+            card.classList.toggle("selected", Boolean(radio?.checked));
+          });
+      }
+
+      function updateProgress() {
+        if (resultsScreen.classList.contains("active")) {
+          progressBar.style.width = "100%";
+          stepCount.textContent = "Done";
+          return;
+        }
+
+        const percentage = ((currentStep + 1) / totalSteps) * 100;
+        progressBar.style.width = `${percentage}%`;
+        stepCount.textContent = `${currentStep + 1} / ${totalSteps}`;
+      }
+
+      function showStep(index) {
+        currentStep = Math.max(0, Math.min(index, totalSteps - 1));
+
+        resultsScreen.classList.remove("active");
+        form.hidden = false;
+
+        steps.forEach((step, stepIndex) => {
+          step.classList.toggle("active", stepIndex === currentStep);
+        });
+
+        updateProgress();
+
+        const focusTarget = steps[currentStep].querySelector(
+          "input:not([type='radio']), select"
+        );
+
+        if (focusTarget) {
+          window.setTimeout(() => focusTarget.focus(), 160);
+        }
+      }
+
+      function validateCurrentStep() {
+        const fieldName = stepFieldMap[currentStep];
+
+        if (!fieldName) {
+          return true;
+        }
+
+        const input = fields[fieldName];
+        const rule = validationRules[fieldName];
+        const value = parseNumber(input);
+        const error = errors[fieldName];
+
+        const valid =
+          Number.isFinite(value) &&
+          value >= rule.min &&
+          value <= rule.max;
+
+        if (!valid) {
+          error.textContent = rule.message;
+          error.hidden = false;
+          input.focus();
+          return false;
+        }
+
+        error.hidden = true;
+        return true;
+      }
+
+      function calculateResults() {
+        const sex = selectedRadio("sex");
+        const goal = selectedRadio("goal");
+        const weight = parseNumber(fields.weight);
+        const height = parseNumber(fields.height);
+        const age = parseNumber(fields.age);
+        const activity = parseNumber(fields.activity);
+        const bodyFat = parseNumber(fields.bodyFat);
+
+        const values = [weight, height, age, activity, bodyFat];
+        if (values.some((value) => !Number.isFinite(value))) {
+          throw new Error("One or more calculator inputs are invalid.");
+        }
+
+        const bmr =
+          sex === "male"
+            ? 10 * weight + 6.25 * height - 5 * age + 5
+            : 10 * weight + 6.25 * height - 5 * age - 161;
+
+        const maintenance = bmr * activity;
+
+        const goalMultipliers = {
+          cut: 0.8,
+          maintain: 1,
+          bulk: 1.25,
+        };
+
+        const goalNames = {
+          cut: "Cut",
+          maintain: "Maintain",
+          bulk: "Bulk",
+        };
+
+        const goalCalories = maintenance * goalMultipliers[goal];
+
+        const lbm = ((100 - bodyFat) / 100) * weight;
+
+        const proteinCoefficient =
+          sex === "male"
+            ? -0.016 * bodyFat + 1.68
+            : -0.0125 * bodyFat + 1.7;
+
+        const proteinGrams =
+          (proteinCoefficient * lbm) / 0.45359237;
+
+        const proteinCalories = proteinGrams * 4;
+
+        const fatPercentage =
+          sex === "male"
+            ? (0.75 * bodyFat + 16.25) / 100
+            : (0.5 * bodyFat + 15) / 100;
+
+        const fatCalories = fatPercentage * goalCalories;
+        const fatGrams = fatCalories / 9;
+
+        const carbohydrateCalories =
+          goalCalories - proteinCalories - fatCalories;
+
+        const carbohydrateGrams =
+          Math.max(0, carbohydrateCalories / 4);
+
+        outputs.bmr.textContent = format(bmr);
+        outputs.maintenance.textContent = format(maintenance);
+        outputs.goal.textContent = format(goalCalories);
+        outputs.lbm.textContent = format(lbm);
+        outputs.protein.textContent = format(proteinGrams);
+        outputs.fat.textContent = format(fatGrams);
+        outputs.carbs.textContent = format(carbohydrateGrams);
+        outputs.goalLabel.textContent = `${goalNames[goal]} calories`;
+        outputs.summary.textContent =
+          `${sex === "male" ? "Male" : "Female"} • ` +
+          `${format(weight)} kg • ${format(bodyFat)}% body fat • ` +
+          `Activity factor ${format(activity, 3)}`;
+      }
+
+      function showResults() {
+        calculateResults();
+
+        steps.forEach((step) => step.classList.remove("active"));
+        form.hidden = true;
+        resultsScreen.classList.add("active");
+        updateProgress();
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      }
+
+      document.querySelectorAll(".next-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          if (!validateCurrentStep()) {
+            return;
+          }
+
+          showStep(currentStep + 1);
+        });
+      });
+
+      document.querySelectorAll(".back-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          showStep(currentStep - 1);
+        });
+      });
+
+      document.querySelectorAll("input[type='radio']").forEach((radio) => {
+        radio.addEventListener("change", () => {
+          setChoiceStyles(radio.name);
+        });
+      });
+
+      document.querySelectorAll(".choice-card").forEach((card) => {
+        card.addEventListener("click", () => {
+          const radio = card.querySelector("input[type='radio']");
+          if (radio) {
+            radio.checked = true;
+            radio.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+        });
+      });
+
+      Object.entries(fields).forEach(([name, input]) => {
+        input.addEventListener("input", () => {
+          if (errors[name]) {
+            errors[name].hidden = true;
+          }
+        });
+      });
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        try {
+          showResults();
+        } catch (error) {
+          alert(error.message);
+        }
+      });
+
+      document.getElementById("edit-button").addEventListener("click", () => {
+        showStep(0);
+      });
+
+      document.getElementById("restart-button").addEventListener("click", () => {
+        form.reset();
+
+        fields.weight.value = "75";
+        fields.height.value = "174";
+        fields.age.value = "25";
+        fields.activity.value = "1.70";
+        fields.bodyFat.value = "16.5";
+
+        setChoiceStyles("sex");
+        setChoiceStyles("goal");
+
+        Object.values(errors).forEach((error) => {
+          error.hidden = true;
+        });
+
+        showStep(0);
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (
+          event.key === "Enter" &&
+          !resultsScreen.classList.contains("active") &&
+          currentStep < totalSteps - 1
+        ) {
+          const activeElement = document.activeElement;
+
+          if (activeElement?.tagName === "SELECT") {
+            return;
+          }
+
+          event.preventDefault();
+
+          if (validateCurrentStep()) {
+            showStep(currentStep + 1);
+          }
+        }
+      });
+
+      setChoiceStyles("sex");
+      setChoiceStyles("goal");
+      updateProgress();
+    })();
+  </script>
 </body>
 </html>
