@@ -958,7 +958,11 @@
 
           <section class="workout-section">
             <h3>Pre-workout & Post-workout</h3>
-            <p>The workout totals are divided equally between the two meals.</p>
+            <p>
+      Protein = 0.5 × body weight &nbsp;•&nbsp;
+      Carbs = 1 × body weight &nbsp;•&nbsp;
+      Fat = 0–20 g
+    </p>
 
             <div class="workout-grid">
               <article class="workout-card">
@@ -976,7 +980,7 @@
 
                 <div class="workout-row">
                   <span>Fat</span>
-                  <strong>0–10 g</strong>
+                  <strong>0–20 g</strong>
                 </div>
               </article>
 
@@ -995,7 +999,7 @@
 
                 <div class="workout-row">
                   <span>Fat</span>
-                  <strong>0–10 g</strong>
+                  <strong>0–20 g</strong>
                 </div>
               </article>
             </div>
@@ -1018,7 +1022,7 @@
         Change this value whenever you want a different access code.
         This is client-side protection for a static GitHub Pages website.
       */
-      const ACCESS_CODE = "Issa_Is_My_Daddy";
+      const ACCESS_CODE = "FIT2026";
 
       const accessScreen = document.getElementById("access-screen");
       const calculatorScreen = document.getElementById("calculator-screen");
@@ -1235,20 +1239,26 @@
         const carbohydrateGrams = Math.max(0, carbohydrateCalories / 4);
 
         /*
-          Workout nutrition equations supplied by the user:
-          total protein = 0.5 × body weight
-          total carbs   = 1.0 × body weight
-          total fat     = 0–20 g
+          PRE-WORKOUT / POST-WORKOUT EQUATIONS
 
-          The totals are divided equally between pre-workout and post-workout.
+          Protein (g) = 0.5 × body weight (kg)
+          Carbs   (g) = 1.0 × body weight (kg)
+          Fat     (g) = 0–20
+
+          Example at 80 kg:
+          Protein = 40 g
+          Carbs   = 80 g
+
+          The same equations are displayed for both the pre-workout
+          and post-workout meals. There is NO division by 2.
         */
-        const workoutProteinTotal = 0.5 * weight;
-        const workoutCarbsTotal = weight;
+        const workoutProtein = 0.5 * weight;
+        const workoutCarbs = 1.0 * weight;
 
-        const preProtein = workoutProteinTotal / 2;
-        const postProtein = workoutProteinTotal / 2;
-        const preCarbs = workoutCarbsTotal / 2;
-        const postCarbs = workoutCarbsTotal / 2;
+        const preProtein = workoutProtein;
+        const postProtein = workoutProtein;
+        const preCarbs = workoutCarbs;
+        const postCarbs = workoutCarbs;
 
         outputs.maintenance.textContent = format(maintenance);
         outputs.goal.textContent = format(goalCalories);
